@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Management - Sugar Factory</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+	
+		       body {
+		           background-image: url('/images/Sugar1.jpeg');
+		           background-size: cover;
+		           background-position: center;
+		           background-repeat: no-repeat;
+		           font-family: 'Arial', sans-serif;
+		           color: #333;
+		       }
+
+		       .container {
+		           max-width: 1200px;
+		           padding: 20px;
+		           background-color: transparent;
+		           border-radius: 12px;
+		           box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+		           margin-top: 30px;
+		       }
+
+		       h1,
+		       h2 {
+		           color: #5e3d26;
+		           text-align: center;
+		           margin-bottom: 25px;
+		       }
+
+		       h1 {
+		           font-size: 2.5rem;
+		           font-weight: bold;
+		       }
+
+		       .card {
+		           margin-bottom: 30px;
+		           border-radius: 10px;
+		           background-color: #f9f9f9;
+		           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		           border: 1px solid #ddd;
+		       }
+
+		       .card-header {
+		           background-color: #d49e66;
+		           color: white;
+		           font-size: 1.5rem;
+		           padding: 10px;
+		           border-radius: 10px 10px 0 0;
+		       }
+
+		       .card-body {
+		           padding: 25px;
+		       }
+
+		       .form-control,
+		       .form-select {
+		           border-radius: 8px;
+		           padding: 12px;
+		           border: 1px solid #b38a58;
+		           margin-bottom: 20px;
+		       }
+
+		       .form-control:focus,
+		       .form-select:focus {
+		           border-color: #7a552f;
+		           box-shadow: 0 0 5px rgba(122, 85, 47, 0.4);
+		       }
+
+		       .btn-primary {
+		           background-color: #7a552f;
+		           border-color: #7a552f;
+		           padding: 12px 25px;
+		           font-weight: bold;
+		           transition: background-color 0.3s ease;
+		       }
+
+		       .btn-primary:hover {
+		           background-color: #5a3f26;
+		           border-color: #5a3f26;
+		       }
+
+		       .table th {
+		           background-color: #b48b4f;
+		           color: white;
+		           font-weight: bold;
+		           text-align: center;
+		       }
+
+		       .table td {
+		           text-align: center;
+		           padding: 10px;
+		       }
+
+		       .table-striped tbody tr:nth-of-type(odd) {
+		           background-color: #f7f1e0;
+		       }
+
+		       .table-striped tbody tr:nth-of-type(even) {
+		           background-color: #fff1d7;
+		       }
+
+		       .table-bordered {
+		           border-radius: 10px;
+		           border: 1px solid #ddd;
+		       }
+
+		       .table-bordered th,
+		       .table-bordered td {
+		           padding: 12px;
+		       }
+
+		       .mb-5 {
+		           margin-bottom: 3rem;
+		       }
+
+		       .alert {
+		           margin-top: 20px;
+		       }
+
+		       #addEquipmentForm {
+		           position: relative;
+		           z-index: 10;
+		       }
+
+		       #toggleAddEquipmentFormBtn {
+		           margin-bottom: 10px;
+		       }
+		   </style>
+    
+</head>
+<body>
+    <div class="container">
+        <!-- Main Page Button -->
+        <div>
+            <button onclick="window.location.href='/unit';" class="btn btn-primary mb-3">Main Page</button>
+        </div>
+
+        <!-- Add/Edit Checklist Form -->
+        <div class="card" id="addChecklistForm">
+            <div class="card-header">
+                Add/Edit Checklist Parameter
+            </div>
+            <div class="card-body">
+                <form id="checklistForm" action="/add-checklist" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" id="checklistId" name="checklistId" value=""> <!-- Hidden field for checklist ID -->
+
+                    <div class="mb-3">
+                        <label for="partId">Part:</label>
+                        <select id="partId" name="partId" class="form-select" required>
+                            <option value="" disabled selected>Choose Part</option>
+                            <option th:each="part : ${activePartList}" th:value="${part.partId}" th:text="${part.partName}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="parameterName">Parameter Name:</label>
+                        <input type="text" id="parameterName" name="parameterName" class="form-control" value="" placeholder="Enter Parameter Name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="inspectionCondition" class="form-label">Condition:</label>
+                        <select id="inspectionCondition" name="inspectionCondition" class="form-select" required
+                            onchange="toggleCriteriaFields()">
+                            <option value="" disabled selected>Choose inspectionCondition</option>
+                            <option value="with_criteria">With Criteria</option>
+                            <option value="without_criteria">Without Criteria</option>
+                        </select>
+                    </div>
+
+                    <div id="criteriaFields" style="display:none;">
+                        <div class="mb-3">
+                            <label for="parameterValueType" class="form-label">Parameter Value Type:</label>
+                            <select id="parameterValueType" name="parameterValueType" class="form-control">
+                                <option value="String">String</option>
+                                <option value="Float">Float</option>
+                                <option value="Integer">Integer</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="standardValue" class="form-label">Standard Value:</label>
+                            <input type="text" id="standardValue" name="standardValue" class="form-control" value="" placeholder="Enter Standard Value">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="unit" class="form-label">Unit:</label>
+                            <input type="text" id="unit" name="unit" class="form-control" value="" placeholder="Enter Unit">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit Checklist</button>
+                </form>
+			
+            </div>
+        </div>
+
+        <!-- Checklist List Table -->
+        <div class="card">
+            <div class="card-header">
+                Checklist List
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th class="d-none">Checklist ID</th>
+                            <th>SI.No</th>
+                            <th>Part Name</th>
+                            <th>Parameter Name</th>
+                            <th>Parameter Value Type</th>
+                            <th>Standard Value</th>
+                            <th>Unit</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="checklist, stat : ${checklistList}">
+                            <td class="d-none" th:text="${checklist.checklistId}"></td>
+                            <td th:text="${stat.index + 1}"></td>
+                            <td th:text="${checklist.part.partName}"></td>
+                            <td th:text="${checklist.parameterName}"></td>
+                            <td th:text="${checklist.parameterValueType}"></td>
+                            <td th:text="${checklist.standardValue}"></td>
+                            <td th:text="${checklist.unit}"></td>
+                            <td>
+								<!-- Edit Button -->
+								<button class="btn btn-warning btn-sm" 
+								        th:attr="onclick='editChecklist(' + ${checklist.checklistId} + ',' + ${checklist.part.partId} + ',\'' + ${checklist.parameterName} + '\',\'' + ${checklist.inspectionCondition} + '\',\'' + ${checklist.parameterValueType} + '\',\'' + ${checklist.standardValue} + '\',\'' + ${checklist.unit} + '\')'">
+								    Edit
+								</button>
+
+
+                                <!-- Delete Button -->
+                                <form action="/delete-checklist" method="POST" style="display:inline;">
+                                    <input type="hidden" name="checklistId" th:value="${checklist.checklistId}" />
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to delete this checklist?');">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+		function toggleCriteriaFields() {
+		    const inspectionCondition = document.getElementById('inspectionCondition').value;
+		    const criteriaFields = document.getElementById('criteriaFields');
+		    
+		    if (inspectionCondition === 'with_criteria') {
+		        criteriaFields.style.display = 'block';  // Show fields for "With Criteria"
+		        
+		        // Optionally, ensure that these fields are populated correctly when switching back to "with_criteria"
+		        // No need to reset to 'NA' in this case
+		    } else {
+		        criteriaFields.style.display = 'none';  // Hide fields for "Without Criteria"
+
+		        // Reset fields to 'NA' when inspectionCondition is 'without_criteria'
+		        document.getElementById('parameterValueType').value = 'NA';
+		        document.getElementById('standardValue').value = 'NA';
+		        document.getElementById('unit').value = 'NA';
+		    }
+		}
+
+
+        function editChecklist(checklistId, partId, parameterName, inspectionCondition, parameterValueType, standardValue, unit) {
+            // Populate the form with existing values for editing
+            document.getElementById('checklistId').value = checklistId;
+            document.getElementById('partId').value = partId;
+            document.getElementById('parameterName').value = parameterName;
+            document.getElementById('parameterName').placeholder = parameterName;
+            document.getElementById('inspectionCondition').value = inspectionCondition;
+            document.getElementById('parameterValueType').value = parameterValueType;
+            document.getElementById('standardValue').value = standardValue;
+            document.getElementById('standardValue').placeholder = standardValue;
+            document.getElementById('unit').value = unit;
+            document.getElementById('unit').placeholder = unit;
+
+            // Show criteria fields if the inspectionCondition is 'with_criteria'
+            if (inspectionCondition === 'with_criteria') {
+                document.getElementById('criteriaFields').style.display = 'block';
+            } else {
+                document.getElementById('criteriaFields').style.display = 'none';
+            }
+
+            // Change the form action to edit checklist
+            document.getElementById('checklistForm').action = '/edit-checklist';  // Set action for editing
+        }
+    </script>
+</body>
+</html>

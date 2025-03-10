@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Selection</title>
+    <style>
+        body {
+            height: 100vh; /* Full screen height */
+            overflow: hidden; /* Prevent scrolling */
+            background-image: url('/images/Sugar1.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            color: #5e3d26;
+            text-align: center;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 2px;
+            border: 1px solid #7a552f;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #7a552f;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #5e3d26;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Role Selection</h2>
+    <div class="text-center ">
+        <button onclick="window.location.href='/dashboard';" class="btn btn-primary ">Go to Main Page</button>
+    </div>
+    
+    <form action="/submit-role" method="POST">
+        <!-- Unit Selection -->
+        <label for="unit">Select Unit:</label>
+        <select id="unit" name="unit" required onchange="filterOptions()">
+            <option value="">-- Select Unit --</option>
+            <option th:each="unit : ${units}" th:value="${unit.unitId}" th:text="${unit.unitName}"></option>
+        </select>
+
+        <!-- Inspector Selection -->
+        <label for="inspector">Select Inspector:</label>
+        <select id="inspector" name="inspector" required onchange="filterOptions()">
+            <option value="">-- Select Inspector --</option>
+            <option th:each="user : ${users}" th:value="${user.username}" th:text="${user.username}"></option>
+        </select>
+
+        <!-- Approver 1 Selection -->
+        <label for="approver1">Select Approver 1:</label>
+        <select id="approver1" name="approver1" required onchange="filterOptions()" disabled>
+            <option value="">-- Select Approver 1 --</option>
+            <option th:each="user : ${users}" th:value="${user.username}" th:text="${user.username}"></option>
+        </select>
+
+        <!-- Approver 2 Selection -->
+        <label for="approver2">Select Approver 2:</label>
+        <select id="approver2" name="approver2" required onchange="filterOptions()" disabled>
+            <option value="">-- Select Approver 2 --</option>
+            <option th:each="user : ${users}" th:value="${user.username}" th:text="${user.username}"></option>
+        </select>
+
+        <!-- Approver 3 Selection -->
+        <label for="approver3">Select Approver 3:</label>
+        <select id="approver3" name="approver3" required onchange="filterOptions()" disabled>
+            <option value="">-- Select Approver 3 --</option>
+            <option th:each="user : ${users}" th:value="${user.username}" th:text="${user.username}"></option>
+        </select>
+
+        <!-- Approver 4 Selection -->
+        <label for="approver4">Select Approver 4:</label>
+        <select id="approver4" name="approver4" required onchange="filterOptions()" disabled>
+            <option value="">-- Select Approver 4 --</option>
+            <option th:each="user : ${users}" th:value="${user.username}" th:text="${user.username}"></option>
+        </select>
+
+        <!-- Approver 5 Selection -->
+        <label for="approver5">Select Approver 5:</label>
+        <select id="approver5" name="approver5" required onchange="filterOptions()" disabled>
+            <option value="">-- Select Approver 5 --</option>
+            <option th:each="user : ${users}" th:value="${user.username}" th:text="${user.username}"></option>
+        </select>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <p th:if="${message}" th:text="${message}" style="color: green;"></p>
+</div>
+
+<script>
+    function filterOptions() {
+        let unit = document.getElementById("unit");
+        let inspector = document.getElementById("inspector");
+        let approver1 = document.getElementById("approver1");
+        let approver2 = document.getElementById("approver2");
+        let approver3 = document.getElementById("approver3");
+        let approver4 = document.getElementById("approver4");
+        let approver5 = document.getElementById("approver5");
+
+        // Enable inspector only if a unit is selected
+        if (unit.value) {
+            inspector.disabled = false;
+        } else {
+            inspector.disabled = true;
+            inspector.value = "";
+            approver1.disabled = true;
+            approver2.disabled = true;
+            approver3.disabled = true;
+            approver4.disabled = true;
+            approver5.disabled = true;
+        }
+
+        // Enable approver1 only if an inspector is selected
+        if (inspector.value) {
+            approver1.disabled = false;
+        } else {
+            approver1.disabled = true;
+            approver1.value = "";
+            approver2.disabled = true;
+            approver3.disabled = true;
+            approver4.disabled = true;
+            approver5.disabled = true;
+        }
+
+        // Enable approver2 only if approver1 is selected
+        if (approver1.value) {
+            approver2.disabled = false;
+        } else {
+            approver2.disabled = true;
+            approver2.value = "";
+            approver3.disabled = true;
+            approver4.disabled = true;
+            approver5.disabled = true;
+        }
+
+        // Enable approver3 only if approver2 is selected
+        if (approver2.value) {
+            approver3.disabled = false;
+        } else {
+            approver3.disabled = true;
+            approver3.value = "";
+            approver4.disabled = true;
+            approver5.disabled = true;
+        }
+
+        // Enable approver4 only if approver3 is selected
+        if (approver3.value) {
+            approver4.disabled = false;
+        } else {
+            approver4.disabled = true;
+            approver4.value = "";
+            approver5.disabled = true;
+        }
+
+        // Enable approver5 only if approver4 is selected
+        if (approver4.value) {
+            approver5.disabled = false;
+        } else {
+            approver5.disabled = true;
+            approver5.value = "";
+        }
+
+        // Disable the selected user in all subsequent dropdowns
+        let selectedUsers = [
+            inspector.value, approver1.value, approver2.value, approver3.value, approver4.value, approver5.value
+        ];
+
+        // Function to hide options that are selected in any dropdown
+        function hideSelectedOptions(selectElement) {
+            let options = selectElement.getElementsByTagName("option");
+            for (let option of options) {
+                if (selectedUsers.includes(option.value)) {
+                    option.hidden = true;
+                } else {
+                    option.hidden = false;
+                }
+            }
+        }
+
+        // Hide selected users in all dropdowns
+        hideSelectedOptions(inspector);
+        hideSelectedOptions(approver1);
+        hideSelectedOptions(approver2);
+        hideSelectedOptions(approver3);
+        hideSelectedOptions(approver4);
+        hideSelectedOptions(approver5);
+    }
+
+    // Ensure dropdowns are disabled on page load
+    window.onload = function () {
+        document.getElementById("inspector").disabled = true;
+        document.getElementById("approver1").disabled = true;
+        document.getElementById("approver2").disabled = true;
+        document.getElementById("approver3").disabled = true;
+        document.getElementById("approver4").disabled = true;
+        document.getElementById("approver5").disabled = true;
+    };
+</script>
+
+
+</body>
+</html>
