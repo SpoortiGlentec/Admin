@@ -7,7 +7,7 @@
     <style>
         body {
             height: 100vh; /* Full screen height */
-            overflow: hidden; /* Prevent scrolling */
+            /*overflow: hidden;  Prevent scrolling */
             background-image: url('/images/Sugar1.jpeg');
             background-size: cover;
             background-position: center;
@@ -16,6 +16,13 @@
             color: #5e3d26;
             text-align: center;
         }
+		.table td {
+				    word-wrap: break-word;
+				    white-space: normal;
+				    max-width: 200px; /* Adjust the width as needed */
+				    overflow-wrap: break-word;
+				}
+		 
         .container {
             max-width: 500px;
             margin: auto;
@@ -49,8 +56,8 @@
 
 <div class="container">
     <h2>Role Selection</h2>
-    <div class="text-center ">
-        <button onclick="window.location.href='/dashboard';" class="btn btn-primary ">Go to Main Page</button>
+    <div class="text-center">
+        <button onclick="window.location.href='/dashboard';" class="btn btn-primary">Go to Main Page</button>
     </div>
     
     <form action="/submit-role" method="POST">
@@ -102,8 +109,27 @@
             <option value="">-- Select Approver 5 --</option>
             <option th:each="user : ${users}" th:value="${user.username}" th:text="${user.username}"></option>
         </select>
+        
+        <!-- Manager Selection -->
+        <label for="manager">Select Manager:</label>
+        <select id="manager" name="manager" required onchange="filterOptions()" disabled>
+            <option value="">-- Select Manager --</option>
+            <option th:each="user : ${users}" th:value="${user.username}" th:text="${user.username}"></option>
+        </select>
 
-        <button type="submit">Submit</button>
+		
+
+		<!-- Inspector2 Selection -->
+		<label for="inspector2">Select inspector2:</label>
+		<select id="inspector2" name="inspector2" required onchange="filterOptions()" disabled>
+		    <option value="">-- Select inspector2 --</option>
+		    <option th:each="user : ${users}" th:value="${user.username}" th:text="${user.username}"></option>
+		</select>
+		
+		
+		
+		
+        <button type="submit" onclick="alert('Successfully Submitted.')">Submit</button>
     </form>
 
     <p th:if="${message}" th:text="${message}" style="color: green;"></p>
@@ -118,6 +144,8 @@
         let approver3 = document.getElementById("approver3");
         let approver4 = document.getElementById("approver4");
         let approver5 = document.getElementById("approver5");
+        let manager = document.getElementById("manager");
+		let inspector2 = document.getElementById("inspector2");
 
         // Enable inspector only if a unit is selected
         if (unit.value) {
@@ -130,6 +158,7 @@
             approver3.disabled = true;
             approver4.disabled = true;
             approver5.disabled = true;
+			inspector2.disabled=true;
         }
 
         // Enable approver1 only if an inspector is selected
@@ -142,6 +171,7 @@
             approver3.disabled = true;
             approver4.disabled = true;
             approver5.disabled = true;
+			inspector2.disabled=true;
         }
 
         // Enable approver2 only if approver1 is selected
@@ -153,6 +183,7 @@
             approver3.disabled = true;
             approver4.disabled = true;
             approver5.disabled = true;
+			inspector2.disabled=true;
         }
 
         // Enable approver3 only if approver2 is selected
@@ -163,6 +194,7 @@
             approver3.value = "";
             approver4.disabled = true;
             approver5.disabled = true;
+			inspector2.disabled=true;
         }
 
         // Enable approver4 only if approver3 is selected
@@ -172,6 +204,7 @@
             approver4.disabled = true;
             approver4.value = "";
             approver5.disabled = true;
+			inspector2.disabled=true;
         }
 
         // Enable approver5 only if approver4 is selected
@@ -180,11 +213,28 @@
         } else {
             approver5.disabled = true;
             approver5.value = "";
+			inspector2.disabled=true;
         }
+
+        // Enable manager only if approver5 is selected
+        if (approver5.value) {
+            manager.disabled = false;
+        } else {
+            manager.disabled = true;
+            manager.value = "";
+			inspector2.disabled=true;
+        }
+		if (manager.value) {
+		            inspector2.disabled = false;
+		        } else {
+		            inspector2.disabled = true;
+		            inspector2.value = "";
+					
+		        }
 
         // Disable the selected user in all subsequent dropdowns
         let selectedUsers = [
-            inspector.value, approver1.value, approver2.value, approver3.value, approver4.value, approver5.value
+            inspector.value, approver1.value, approver2.value, approver3.value, approver4.value, approver5.value, manager.value,inspector2.value
         ];
 
         // Function to hide options that are selected in any dropdown
@@ -206,6 +256,8 @@
         hideSelectedOptions(approver3);
         hideSelectedOptions(approver4);
         hideSelectedOptions(approver5);
+        hideSelectedOptions(manager);
+		hideSelectedOptions(inspector2);
     }
 
     // Ensure dropdowns are disabled on page load
@@ -216,9 +268,10 @@
         document.getElementById("approver3").disabled = true;
         document.getElementById("approver4").disabled = true;
         document.getElementById("approver5").disabled = true;
+        document.getElementById("manager").disabled = true;
+		document.getElementById("inspector2").disabled = true;
     };
 </script>
-
 
 </body>
 </html>

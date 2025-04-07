@@ -5,16 +5,16 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Line Management - Sugar Factory</title>
-	
+
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 	<style>
 		body {
 			background-image: url('/images/Sugar1.jpeg');
-						background-size: cover;
-						            background-position: center;
-									background-repeat: no-repeat;
-									
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+
 			font-family: 'Arial', sans-serif;
 			color: #333;
 		}
@@ -22,7 +22,7 @@
 		.container {
 			max-width: 1200px;
 			padding: 40px;
-			background-color:transparent;
+			background-color: transparent;
 			border-radius: 12px;
 			box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
 			margin-top: 30px;
@@ -130,15 +130,25 @@
 		.alert {
 			margin-top: 20px;
 		}
+
 		/* Make sure the form stays in place */
 		#addEquipmentForm {
-		    position: relative;
-		    z-index: 10; /* Ensure it stays above other content */
+			position: relative;
+			z-index: 10;
+			/* Ensure it stays above other content */
 		}
 
 		/* Add some space to the button */
 		#toggleAddEquipmentFormBtn {
-		    margin-bottom: 10px;
+			margin-bottom: 10px;
+		}
+
+		\	 .table td {
+			word-wrap: break-word;
+			white-space: normal;
+			max-width: 200px;
+			/* Adjust the width as needed */
+			overflow-wrap: break-word;
 		}
 	</style>
 </head>
@@ -147,71 +157,74 @@
 
 	<div class="container">
 		<div>
-					<button onclick="window.location.href='/unit';" class="btn btn-primary mb-3">Main Page</button>
-				</div>
-		
+			<button onclick="window.location.href='/unit';" class="btn btn-primary mb-3">Main Page</button>
+		</div>
 
-				<!-- Add Part Form -->
-				<div class="card" id="addPartForm">
-				    <div class="card-header">
-				        Add Part
-				    </div>
-				    <div class="card-body">
-				        <form action="/add-part" method="POST" enctype="multipart/form-data">
-				            <!-- Equipment Dropdown -->
-				            <div class="mb-3">
-				                <label for="equipmentId" class="form-label">Equipment</label>
-				                <select id="equipmentId" name="equipmentId" class="form-select" required>
-				                    <option value="" disabled selected>Select an Equipment</option>
-				                    <option th:each="equipment : ${activeEquipmentList}" th:value="${equipment.eqId}" th:text="${equipment.equipmentName}"></option>
-				                </select>
-				            </div>
 
-				            <!-- Equipment Type (Hidden Input) -->
-				            <input type="hidden" id="equipment_type" name="equipment_type">
+		<!-- Add Part Form -->
+		<div class="card" id="addPartForm">
+			<div class="card-header">
+				Add Part
+			</div>
+			<div class="card-body">
+				<form action="/add-part" method="POST" enctype="multipart/form-data">
+					<!-- Equipment Dropdown -->
+					<div class="mb-3">
+						<label for="equipmentId" class="form-label">Equipment</label>
+						<select id="equipmentId" name="equipmentId" class="form-select" required>
+							<option value="" disabled selected>Select an Equipment</option>
+							<option th:each="equipment : ${activeEquipmentList}" th:value="${equipment.eqId}"
+								th:text="${equipment.equipmentName}"></option>
+						</select>
+					</div>
+					<!-- Equipment Type (Hidden Input) -->
+					<input type="hidden" id="equipment_type" name="equipment_type">
 
-				            <!-- Equipment Type Display as Placeholder -->
-				            <div class="mb-3">
-				                <label for="equipmentTypeDisplay" class="form-label">Equipment Type</label>
-				                <div id="equipmentTypeDisplay" class="form-control" style="cursor: not-allowed;" readonly>
-				                    Select an Equipment to see Equipment Type
-				                </div>
-				            </div>
-
-				            <!-- Part Type Dropdown -->
-				            <div class="mb-3">
-				                <label for="part_type" class="form-label">Part Type</label>
-				                <select id="part_type" name="part_type" class="form-select" required>
-				                    <option value="" disabled selected>Select a Part Type</option>
-				                    <!-- Part types will be dynamically loaded here -->
-				                </select>
-				            </div>
-
-				            <!-- Part Name -->
-				            <div class="mb-3">
-				                <label for="partName">Part Name:</label>
-				                <input type="text" id="partName" name="partName" required class="form-control">
-				            </div>
-
-				            <!-- Image Upload -->
-				            <div class="mb-3">
-				                <label for="imageFile" class="form-label">Upload Image</label>
-				                <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" required>
-				            </div>
-
-				            <!-- Submit Button -->
-				            <button type="submit" class="btn btn-primary">Add Part</button>
-				        </form>
-						<div class="mb-3 mt-3">
-		                    <button id="toggleUnitListBtn" class="btn btn-primary">Show List of Parts</button>
+					<!-- Equipment Type Display as Placeholder -->
+					<div class="mb-3" style="display: none;">
+						<label for="equipmentTypeDisplay" class="form-label">Equipment Type</label>
+						<div id="equipmentTypeDisplay" class="form-control" style="cursor: not-allowed;" readonly>
+							Select an Equipment to see Equipment Type
 						</div>
-				    </div>
+					</div>
+
+					<!-- Part Type Dropdown -->
+					<div class="mb-3">
+						<label for="part_type" class="form-label">Part Type</label>
+						<select id="part_type" name="part_type" class="form-select" required>
+							<option value="" disabled selected>Select a Part Type</option>
+							<!-- Part types will be dynamically loaded here -->
+						</select>
+					</div>
+
+					<!-- Part Name -->
+					<div class="mb-3">
+						<label for="partName">Part Name:</label>
+						<input type="text" id="partName" name="partName" required class="form-control">
+					</div>
+
+					<!-- Image Upload -->
+					<div class="mb-3">
+						<label for="imageFile" class="form-label">Upload Image</label>
+						<input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/jpg"
+							required>
+
+					</div>
+
+					<!-- Submit Button -->
+					<button type="submit" class="btn btn-primary" >Add
+						Part</button>
+				</form>
+				<div class="mb-3 mt-3">
+					<button id="toggleUnitListBtn" class="btn btn-primary">Show List of Parts</button>
 				</div>
+			</div>
+		</div>
 
 
 
 		<!-- Parts List Table -->
-		<div="card" id="partLists" class="d-none" >
+		<div="card" id="partLists" class="d-none">
 			<div class="card-header">
 				Part List
 			</div>
@@ -219,7 +232,8 @@
 				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
-							<th>Part ID</th>
+							<th class="d-none">Part ID</th>
+							<th>SI NO</th>
 							<th>Part Name</th>
 							<th>Status</th>
 							<th>Equipment Name</th>
@@ -227,8 +241,9 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="part : ${activePartList}">
-							<td th:text="${part.partId}"></td>
+						<tr th:each="part,stat : ${activePartList}">
+							<td class="d-none" th:text="${part.partId}"></td>
+							<td th:text="${stat.index+1}"></td>
 							<td th:text="${part.partName}"></td>
 							<td th:text="${part.status}"></td>
 							<td th:text="${part.equipment.equipmentName}"></td>
@@ -264,7 +279,8 @@
 					<table class="table table-bordered table-striped">
 						<thead>
 							<tr>
-								<th>Part ID</th>
+								<th class="d-none">Part ID</th>
+								<th>SI NO</th>
 								<th>Part Name</th>
 								<th>Status</th>
 								<th>Equipment Name</th>
@@ -272,8 +288,9 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr th:each="part : ${inactivePartList}">
-								<td th:text="${part.partId}"></td>
+							<tr th:each="part,stat : ${inactivePartList}">
+								<td class="d-none" th:text="${part.partId}"></td>
+								<td th:text="${stat.index+1}"></td>
 								<td th:text="${part.partName}"></td>
 								<td th:text="${part.status}"></td>
 								<td th:text="${part.equipment.equipmentName}"></td>
@@ -290,127 +307,164 @@
 					</table>
 				</div>
 			</div>
-	
 
-	
-		</div>
+
+
 	</div>
-	
+	</div>
+
 
 	<script>
-		$(document).ready(function() {
-		    // Event listener for equipment dropdown change
-		    $('#equipmentId').change(function() {
-		        var equipmentId = $(this).val();
-		        
-		        // Fetch the equipment type based on selected equipmentId
-		        if (equipmentId) {
-		            $.ajax({
-		                url: '/get-equipment-type',  // Endpoint to fetch equipment type
-		                type: 'GET',
-		                data: { equipmentId: equipmentId },
-		                success: function(response) {
-		                    console.log("Equipment Type Response: ", response);  // Log to ensure the response is correct
-		                    $('#equipmentType').text(response);  // Set the equipment type in the placeholder div
-		                    loadPartTypes(response);  // Fetch part types based on equipment type
-		                },
-		                error: function(xhr, status, error) {
-		                    console.error('Error fetching equipment type:', error);
-		                    $('#equipmentType').text('Error loading equipment type');
-		                }
-		            });
-		        } else {
-		            // If no equipment selected, clear the equipment type placeholder
-		            $('#equipmentType').text('Select an Equipment to see Equipment Type');
-		        }
-		    });
+		$(document).ready(function () {
+			// Event listener for equipment dropdown change
+			$('#equipmentId').change(function () {
+				var equipmentId = $(this).val();
 
-		    // Function to load part types based on the equipment type
+				// Fetch the equipment type based on selected equipmentId
+				if (equipmentId) {
+					$.ajax({
+						url: '/get-equipment-type',  // Endpoint to fetch equipment type
+						type: 'GET',
+						data: {equipmentId: equipmentId},
+						success: function (response) {
+							console.log("Equipment Type Response: ", response);  // Log to ensure the response is correct
+							$('#equipmentType').text(response);  // Set the equipment type in the placeholder div
+							loadPartTypes(response);  // Fetch part types based on equipment type
+						},
+						error: function (xhr, status, error) {
+							console.error('Error fetching equipment type:', error);
+							$('#equipmentType').text('Error loading equipment type');
+						}
+					});
+				} else {
+					// If no equipment selected, clear the equipment type placeholder
+					$('#equipmentType').text('Select an Equipment to see Equipment Type');
+				}
+			});
+
+			// Function to load part types based on the equipment type
 			function loadPartTypes(equipmentTypeId) {
-			    if (equipmentTypeId) {
-			        $.ajax({
-			            url: '/get-part-types',  // Your endpoint
-			            type: 'GET',
-			            data: { equipment_type: equipmentTypeId },  // Update parameter name to 'equipment_type'
-			            success: function(response) {
-			                $('#part_type').empty();  // Clear existing options
-			                $('#part_type').append('<option value="" disabled selected>Select a Part Type</option>');
+				if (equipmentTypeId) {
+					$.ajax({
+						url: '/get-part-types',  // Your endpoint
+						type: 'GET',
+						data: {equipment_type: equipmentTypeId},  // Update parameter name to 'equipment_type'
+						success: function (response) {
+							$('#part_type').empty();  // Clear existing options
+							$('#part_type').append('<option value="" disabled selected>Select a Part Type</option>');
 
-			                if (response.length > 0) {
-			                    response.forEach(function(partType) {
-			                        $('#part_type').append('<option value="' + partType.partTypeId + '">' + partType.partTypeName + '</option>');
-			                    });
-			                } else {
-			                    $('#part_type').append('<option value="" disabled>No Part Types Available</option>');
-			                }
-			            },
-			            error: function(xhr, status, error) {
-			                console.error('Error fetching part types:', error);
-			                $('#part_type').empty().append('<option value="" disabled>Error loading part types</option>');
-			            }
-			        });
-			    }
-			}})
+							if (response.length > 0) {
+								response.forEach(function (partType) {
+									$('#part_type').append('<option value="' + partType.partTypeId + '">' + partType.partTypeName + '</option>');
+								});
+							} else {
+								$('#part_type').append('<option value="" disabled>No Part Types Available</option>');
+							}
+						},
+						error: function (xhr, status, error) {
+							console.error('Error fetching part types:', error);
+							$('#part_type').empty().append('<option value="" disabled>Error loading part types</option>');
+						}
+					});
+				}
+			}
+		})
 
 	</script>
 	<script th:inline="javascript">
-	    document.getElementById('equipmentId').addEventListener('change', function () {
-	        const equipmentId = this.value;
-	        const equipmentTypeDisplay = document.getElementById('equipmentTypeDisplay');
-	        const equipmentTypeInput = document.getElementById('equipment_type');
-	        const partTypeDropdown = document.getElementById('part_type');
+		document.getElementById('equipmentId').addEventListener('change', function () {
+			const equipmentId = this.value;
+			const equipmentTypeDisplay = document.getElementById('equipmentTypeDisplay');
+			const equipmentTypeInput = document.getElementById('equipment_type');
+			const partTypeDropdown = document.getElementById('part_type');
 
-	        if (equipmentId) {
-	            // Fetch equipment type and part types
-	            fetch(`/get-equipment-type?equipmentId=${equipmentId}`)
-	                .then(response => response.text())
-	                .then(equipmentType => {
-	                    // Update equipment type display and hidden input
-	                    equipmentTypeDisplay.textContent = equipmentType || 'No equipment type found';
-	                    equipmentTypeInput.value = equipmentType;
+			if (equipmentId) {
+				// Fetch equipment type and part types
+				fetch(`/get-equipment-type?equipmentId=${equipmentId}`)
+					.then(response => response.text())
+					.then(equipmentType => {
+						// Update equipment type display and hidden input
+						equipmentTypeDisplay.textContent = equipmentType || 'No equipment type found';
+						equipmentTypeInput.value = equipmentType;
 
-	                    // Fetch part types for the selected equipment type
-	                    return fetch(`/get-part-types?equipment_type=${equipmentType}`);
-	                })
-	                .then(response => response.json())
-	                .then(partTypes => {
-	                    // Clear existing options
-	                    partTypeDropdown.innerHTML = '<option value="" disabled selected>Select a Part Type</option>';
+						// Fetch part types for the selected equipment type
+						return fetch(`/get-part-types?equipment_type=${equipmentType}`);
+					})
+					.then(response => response.json())
+					.then(partTypes => {
+						// Clear existing options
+						partTypeDropdown.innerHTML = '<option value="" disabled selected>Select a Part Type</option>';
 
-	                    // Add new options
-	                    partTypes.forEach(partType => {
-	                        const option = document.createElement('option');
-	                        option.value = partType.partTypeId;
-	                        option.textContent = partType.partTypeName;
-	                        partTypeDropdown.appendChild(option);
-	                    });
-	                })
-	                .catch(error => {
-	                    console.error('Error fetching data:', error);
-	                    equipmentTypeDisplay.textContent = 'Error loading equipment type';
-	                    partTypeDropdown.innerHTML = '<option value="" disabled selected>Error loading part types</option>';
-	                });
-	        } else {
-	            // Reset fields if no equipment is selected
-	            equipmentTypeDisplay.textContent = 'Select an Equipment to see Equipment Type';
-	            equipmentTypeInput.value = '';
-	            partTypeDropdown.innerHTML = '<option value="" disabled selected>Select a Part Type</option>';
-	        }
-	    });
+						// Add new options
+						partTypes.forEach(partType => {
+							const option = document.createElement('option');
+							option.value = partType.partTypeId;
+							option.textContent = partType.partTypeName;
+							partTypeDropdown.appendChild(option);
+						});
+					})
+					.catch(error => {
+						console.error('Error fetching data:', error);
+						equipmentTypeDisplay.textContent = 'Error loading equipment type';
+						partTypeDropdown.innerHTML = '<option value="" disabled selected>Error loading part types</option>';
+					});
+			} else {
+				// Reset fields if no equipment is selected
+				equipmentTypeDisplay.textContent = 'Select an Equipment to see Equipment Type';
+				equipmentTypeInput.value = '';
+				partTypeDropdown.innerHTML = '<option value="" disabled selected>Select a Part Type</option>';
+			}
+		});
 	</script>
 	<!-- JavaScript for toggling the visibility of the unit lists -->
-					<script>
-						document.getElementById("toggleUnitListBtn").addEventListener("click", function() {
-							var partLists = document.getElementById("partLists");
-							if (partLists.classList.contains("d-none")) {
-								partLists.classList.remove("d-none");
-								this.textContent = "Hide List of Parts"; // Change button text
-							} else {
-								partLists.classList.add("d-none");
-								this.textContent = "Show List of Parts"; // Change button text
-							}
-						});
-					</script>
+	<script>
+		document.getElementById("toggleUnitListBtn").addEventListener("click", function () {
+			var partLists = document.getElementById("partLists");
+			if (partLists.classList.contains("d-none")) {
+				partLists.classList.remove("d-none");
+				this.textContent = "Hide List of Parts"; // Change button text
+			} else {
+				partLists.classList.add("d-none");
+				this.textContent = "Show List of Parts"; // Change button text
+			}
+		});
+	</script>
+
+	<script>
+		
+	
+		document.getElementById("imageFile").addEventListener("change", function () {
+				    var file = this.files[0]; // Get the selected file
+				    if (file) {
+				        var fileType = file.name.split('.').pop().toLowerCase(); // Get the file extension
+				        var fileSize = file.size / 1024 / 1024; // Convert size to MB (1 MB = 1024 * 1024 bytes)
+
+				        // Check if the file type is JPG or JPEG
+				        if (fileType !== "jpg" && fileType !== "jpeg") {
+				            alert("Only JPG and JPEG images (.jpg, .jpeg) are allowed!");
+				            this.value = ""; // Clear the file input
+				        }
+				        // Check if the file size is under 10MB
+				        else if (fileSize > 10) {
+				            alert("The image size must be less than 10 MB!");
+				            this.value = ""; // Clear the file input
+				        }
+				    }
+				});
+
+			// Form submission validation
+			document.querySelector('form').addEventListener('submit', function (event) {
+				const partName = document.getElementById('partName').value;
+				const imageFile = document.getElementById('imageFile').files[0];
+
+				if (!partName || !imageFile) {
+					alert('Please fill in all the fields before submitting!');
+					event.preventDefault();
+				} else {
+					alert('Successfully Submitted.');
+				}
+			});
+			</script>
 
 </body>
 

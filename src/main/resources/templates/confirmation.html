@@ -1,143 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submission Successful</title>
-    <style>
-        /* Body and overall styling */
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Submission Successful</title>
+	<style>
+		/* Body and overall styling */
 		body {
-		           font-family: 'Arial', sans-serif;
-		           background-color: #f9f9f9;
-		           color: #333;
-		           display: flex;
-		           justify-content: center;
-		           align-items: center;
-		           height: 100vh;
-		           margin: 0;
-		       }
-        /* Container Styling */
-        .container {
+			font-family: 'Arial', sans-serif;
+			background-color: #f9f9f9;
+			color: #333;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+		}
+
+		/* Container Styling */
+		.container {
 			background-color: #fff;
-			           padding: 30px;
-			           border-radius: 15px;
-			           box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-			           text-align: center;
-			           width: 80%;
-			           max-width: 600px;
-            
-        }
+			padding: 30px;
+			border-radius: 15px;
+			box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+			text-align: center;
+			width: 80%;
+			max-width: 600px;
 
-        h2 {
-            text-align: center;
-            color: #5e3d26;
-            margin-bottom: 30px;
-        }
+		}
 
-        /* Label styling */
-        .form-label {
-            font-weight: bold;
-            color: #5e3d26;
-        }
+		h2 {
+			text-align: center;
+			color: #5e3d26;
+			margin-bottom: 30px;
+		}
 
-        /* Form control elements */
-        .form-control {
-            border-radius: 8px;
-            border-color: #b38a58;
-            padding: 12px;
-            margin-bottom: 20px;
-            width: 100%;
-        }
+		/* Label styling */
+		.form-label {
+			font-weight: bold;
+			color: #5e3d26;
+		}
 
-        .form-control:focus {
-            border-color: #7a552f;
-            box-shadow: 0 0 5px rgba(122, 85, 47, 0.4);
-        }
+		/* Form control elements */
+		.form-control {
+			border-radius: 8px;
+			border-color: #b38a58;
+			padding: 12px;
+			margin-bottom: 20px;
+			width: 100%;
+		}
 
-        /* Button styling */
-        .btn-primary {
-            background-color: #7a552f;
-            border-color: #7a552f;
-            padding: 12px 25px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            border-radius: 8px;
-        }
+		.form-control:focus {
+			border-color: #7a552f;
+			box-shadow: 0 0 5px rgba(122, 85, 47, 0.4);
+		}
 
-        .btn-primary:hover {
-            background-color: #5a3f26;
-            border-color: #5a3f26;
-        }
+		/* Button styling */
+		.btn-primary {
+			background-color: #7a552f;
+			border-color: #7a552f;
+			padding: 12px 25px;
+			font-weight: bold;
+			transition: background-color 0.3s ease;
+			width: 100%;
+			border-radius: 8px;
+		}
 
-        /* Card Styling for results */
-        .card-header {
-            background-color: #d49e66;
-            color: white;
-            font-size: 1.5rem;
-            padding: 15px;
-            border-radius: 8px 8px 0 0;
-        }
+		.btn-primary:hover {
+			background-color: #5a3f26;
+			border-color: #5a3f26;
+		}
 
-        .card {
-            margin-bottom: 20px;
-            border-radius: 10px;
-            background-color: #fff9e5;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
+		/* Card Styling for results */
+		.card-header {
+			background-color: #d49e66;
+			color: white;
+			font-size: 1.5rem;
+			padding: 15px;
+			border-radius: 8px 8px 0 0;
+		}
 
-        .result-content {
-            font-size: 1.1rem;
-            margin: 15px 0;
-        }
+		.card {
+			margin-bottom: 20px;
+			border-radius: 10px;
+			background-color: #fff9e5;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		}
 
-        .result-content strong {
-            color: #5e3d26;
-        }
+		.result-content {
+			font-size: 1.1rem;
+			margin: 15px 0;
+		}
 
-        .result-content span {
-            color: #007BFF;
-        }
+		.result-content strong {
+			color: #5e3d26;
+		}
 
-    </style>
+		.result-content span {
+			color: #007BFF;
+		}
+	</style>
 </head>
+
 <body>
 
-    <div class="container">
-        <h2>Submission Successful</h2>
+	<div class="container">
+		<h2>Submission Successful</h2>
 
-        <!-- Card for the results -->
-        <div class="card">
-            <div class="card-header">Submission Details</div>
-            <div class="card-body">
-                <div class="result-content">
-                    <strong>Unit:</strong> <span th:text="${unit}"></span>
-                </div>
-                <div class="result-content">
-                    <strong>Inspector:</strong> <span th:text="${inspector}"></span>
-                </div>
-                <div class="result-content">
-                    <strong>Approver 1:</strong> <span th:text="${approver1}"></span>
-                </div>
-                <div class="result-content">
-                    <strong>Approver 2:</strong> <span th:text="${approver2}"></span>
-                </div>
-                <div class="result-content">
-                    <strong>Approver 3:</strong> <span th:text="${approver3}"></span>
-                </div>
-                <div class="result-content">
-                    <strong>Approver 4:</strong> <span th:text="${approver4}"></span>
-                </div>
-                <div class="result-content">
-                    <strong>Approver 5:</strong> <span th:text="${approver5}"></span>
-                </div>
+		<!-- Card for the results -->
+		<div class="card">
+			<div class="card-header">Submission Details</div>
+			<div class="card-body">
+				<div class="result-content">
+					<strong>Unit:</strong> <span th:text="${unit}"></span>
+				</div>
+				<div class="result-content">
+									<strong>Manager:</strong> <span th:text="${manager}"></span>
+								</div>
+				<div class="result-content">
+					<strong>Inspector:</strong> <span th:text="${inspector}"></span>
+				</div>
+				<div class="result-content">
+					<strong> Inspector2:</strong> <span th:text="${inspector2}"></span>
+				</div>
 
-                <a href="/role">
-                    <button class="btn-primary">Go Back</button>
-                </a>
-            </div>
-        </div>
-    </div>
+				<div class="result-content">
+					<strong>Approver 1:</strong> <span th:text="${approver1}"></span>
+				</div>
+				<div class="result-content">
+					<strong>Approver 2:</strong> <span th:text="${approver2}"></span>
+				</div>
+				<div class="result-content">
+					<strong>Approver 3:</strong> <span th:text="${approver3}"></span>
+				</div>
+				<div class="result-content">
+					<strong>Approver 4:</strong> <span th:text="${approver4}"></span>
+				</div>
+				<div class="result-content">
+					<strong>Approver 5:</strong> <span th:text="${approver5}"></span>
+				</div>
+
+
+				<a href="/role">
+					<button class="btn-primary">Go Back</button>
+				</a>
+			</div>
+		</div>
+	</div>
 
 </body>
+
 </html>

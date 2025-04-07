@@ -109,6 +109,13 @@
 								    background-position: center;
 								    background-repeat: no-repeat;
 		}
+		.table td {
+				    word-wrap: break-word;
+				    white-space: normal;
+				    max-width: 200px; /* Adjust the width as needed */
+				    overflow-wrap: break-word;
+				}
+		 
     </style>
 </head>
 <body>
@@ -138,8 +145,8 @@
 					    <input type="email" id="email" name="email" class="form-control" oninput="validateEmail(this)">
 					</div>
 
+					<button type="submit" class="btn btn-primary">Add User</button>
 
-                    <button type="submit" class="btn btn-primary">Add User</button>
                 </form>
             </div>
         </div>
@@ -206,6 +213,21 @@
 	            input.setCustomValidity('');
 	        }
 	    }
+		// Form submission validation
+		document.querySelector('form').addEventListener('submit', function (event) {
+		    const username = document.getElementById('username').value;
+		    const password = document.getElementById('password').value;  // Checking password as text
+		    const email = document.getElementById('email').value;        // Fetching email field value
+
+		    // Check if all fields are filled in
+		    if (!username || !password || !email) {
+		        alert('Please fill in all the fields before submitting!');
+		        event.preventDefault(); // Prevent form submission
+		    } else {
+		        alert('Successfully Submitted.');
+		    }
+		});
+
 	</script>
 
 </body>

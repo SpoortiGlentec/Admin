@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class LineController {
-	private static final String IMAGE_FOLDER_PATH = "src/main/resources/static/images/";
+	@Value("${image.folder.path}")
+    private String IMAGE_FOLDER_PATH;
 
 
     @Autowired
@@ -58,6 +60,10 @@ public class LineController {
                           @RequestParam("imageFile") MultipartFile imageFile) {
         try {
             String fileName = null;
+            String fileExtension = imageFile.getOriginalFilename().toLowerCase();
+            if (!fileExtension.endsWith(".jpg") && !fileExtension.endsWith(".jpeg")) {
+                return "redirect:/unit?error=InvalidFileType";  // Redirect with an error message
+            }
 
             // Save the uploaded file
             if (!imageFile.isEmpty()) {
@@ -91,6 +97,7 @@ public class LineController {
         return "redirect:/line";
     }
 
+
     @GetMapping("/images")
     @ResponseBody
     public List<String> getImageNames() {
@@ -98,7 +105,9 @@ public class LineController {
         File folder = new File(IMAGE_FOLDER_PATH);
 
         if (folder.exists() && folder.isDirectory()) {
-            File[] files = folder.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = folder.listFiles((dir, name) -> 
+                name.endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg") // Filter for .jpg and .jpeg files only
+            );
             if (files != null) {
                 for (File file : files) {
                     imageNames.add(file.getName());
@@ -107,7 +116,6 @@ public class LineController {
         }
         return imageNames;
     }
-
    
 
         @GetMapping("/lines")
@@ -175,4 +183,48 @@ public class LineController {
         public String activateLine(@RequestParam("lineId") int lineId) {
             lineService.activateLine(lineId);
             return "redirect:/line";
-        }}
+        }
+        
+        @PostMapping("/images")
+        @ResponseBody
+        public String uploadMultipleImages(@RequestParam("image") MultipartFile[] imageFiles) {
+            StringBuilder responseMessage = new StringBuilder();
+
+            // Debugging: Log the number of files received
+            responseMessage.append("Number of files received: ").append(imageFiles.length).append("\n");
+
+            // Check if files were received
+            if (imageFiles.length == 0) {
+                return "No images were uploaded.";
+            }
+
+            // Process each file
+            for (MultipartFile imageFile : imageFiles) {
+                String originalFileName = imageFile.getOriginalFilename();
+                responseMessage.append("Uploading file: ").append(originalFileName).append("\n");
+
+                // Process the file
+                try {
+                    // Save the image file with its original name (no unique name generation)
+                    String filePath = IMAGE_FOLDER_PATH + originalFileName;
+                    File uploadDir = new File(IMAGE_FOLDER_PATH);
+                    
+                    // Ensure the upload directory exists
+                    if (!uploadDir.exists()) {
+                        uploadDir.mkdirs();
+                    }
+
+                    Path path = Paths.get(filePath);
+                    Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                    responseMessage.append("File uploaded successfully: ").append(originalFileName).append("\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    responseMessage.append("Error uploading file: ").append(originalFileName).append("\n");
+                }
+            }
+
+            return responseMessage.toString();
+        }
+
+}

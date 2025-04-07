@@ -33,26 +33,49 @@ public class RoleAssignment {
     private String approver4;
     @Column(name = "approver5")
     private String approver5;
+    
+    @Column(name = "manager")
+    private String manager;
 
     
+   @Column(name = "inspector2")
+    private String inspector2;
+	public String getInspector2() {
+	return inspector2;
+}
+
+public void setInspector2(String inspector2) {
+	this.inspector2 = inspector2;
+}
 
 	public RoleAssignment() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public RoleAssignment(Long id, String unitName, String inspector, String approver1, String approver2,String approver3,String approver4,String approver5) {
+	
+
+	public RoleAssignment(Long id, String unitName, String inspector, String approver1, String approver2,
+			String approver3, String approver4, String approver5, String manager, String inspector2) {
 		super();
 		this.id = id;
 		this.unitName = unitName;
-	
 		this.inspector = inspector;
 		this.approver1 = approver1;
 		this.approver2 = approver2;
-		this.approver1 = approver3;
-		this.approver2 = approver4;
-		this.approver1 = approver5;
-		
+		this.approver3 = approver3;
+		this.approver4 = approver4;
+		this.approver5 = approver5;
+		this.manager = manager;
+		this.inspector2 = inspector2;
+	}
+
+	public String getManager() {
+		return manager;
+	}
+
+	public void setManager(String manager) {
+		this.manager = manager;
 	}
 
 	public Long getId() {

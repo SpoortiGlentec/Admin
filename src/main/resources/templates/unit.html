@@ -10,9 +10,9 @@
 		body {
 			background-image: url('/images/Sugar1.jpeg');
 			background-size: cover;
-			            background-position: center;
-						background-repeat: no-repeat;
-						
+			background-position: center;
+			background-repeat: no-repeat;
+
 			font-family: 'Arial', sans-serif;
 			color: #333;
 		}
@@ -20,11 +20,12 @@
 		.container {
 			max-width: 1200px;
 			padding: 20px;
-			background-color:transparent;			border-radius: 12px;
+			background-color: transparent;
+			border-radius: 12px;
 			box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
 			margin-top: 30px;
 		}
-		
+
 
 		h1,
 		h2 {
@@ -140,7 +141,7 @@
 		#toggleAddEquipmentFormBtn {
 			margin-bottom: 10px;
 		}
-		
+
 
 		.box {
 			background-color: #5a3f26;
@@ -151,10 +152,11 @@
 			padding: 3px;
 			background-color: #d49e66;
 		}
-		.box1{
+
+		.box1 {
 			display: flex;
 			justify-content: space-between;
-			
+
 		}
 	</style>
 </head>
@@ -164,16 +166,16 @@
 	<div class="container">
 		<h1>Sugar Factory Unit Management</h1>
 		<div class="box1">
-		    <div>
-		        <button onclick="window.location.href='/dashboard';" class="btn btn-primary mb-3">Main Page</button>
-		    </div>
+			<div>
+				<button onclick="window.location.href='/dashboard';" class="btn btn-primary mb-3">Main Page</button>
+			</div>
 
-		    <div>
-		        <button onclick="window.location.href='/line';" class="btn btn-primary mb-3">Line</button>
-		        <button onclick="window.location.href='/eq';" class="btn btn-primary mb-3">Equipment</button>
-		        <button onclick="window.location.href='/part';" class="btn btn-primary mb-3">Part</button>
-		       <button onclick="window.location.href='/checklist';" class="btn btn-primary mb-3">CheckList</button>
-		    </div>
+			<div>
+				<button onclick="window.location.href='/line';" class="btn btn-primary mb-3">Line</button>
+				<button onclick="window.location.href='/eq';" class="btn btn-primary mb-3">Equipment</button>
+				<button onclick="window.location.href='/part';" class="btn btn-primary mb-3">Part</button>
+				<button onclick="window.location.href='/checklist';" class="btn btn-primary mb-3">CheckList</button>
+			</div>
 		</div>
 
 		<!-- Add Unit Form -->
@@ -183,27 +185,27 @@
 			</div>
 			<div class="card-body">
 				<form action="/unit/add-unit" method="POST" enctype="multipart/form-data">
-				<!--	<div class="d-flex flex-row justify-content-left">--->
+					<!--	<div class="d-flex flex-row justify-content-left">--->
 					<div class="mb-3">
 						<label for="unitName" class="form-label">Unit Name:</label>
 						<input type="text" id="unitName" name="name" required class="form-control">
 					</div>
 					<div class="mb-3">
 						<label for="imageFile" class="form-label">Upload Image</label>
-						<input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/jpeg,image/jpg"
+						<input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/jpg"
 							required>
 					</div>
 					<!--</div>---->
 					<button type="submit" class="btn btn-primary">Add Unit</button>
 				</form>
 				<div class="mb-3 mt-3">
-				<button id="toggleUnitListBtn" class="btn btn-primary">Show List of Units</button>
+					<button id="toggleUnitListBtn" class="btn btn-primary">Show List of Units</button>
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Unit List Table -->
-		<div id="unitLists"  class="d-none">
+		<div id="unitLists" class="d-none">
 			<div class="card">
 				<div class="card-header">
 					Unit List
@@ -212,15 +214,17 @@
 					<table class="table table-bordered table-striped">
 						<thead>
 							<tr>
-								<th>ID</th>
+								<th class="d-none">ID</th>
+								<th>SI.No</th>
 								<th>Unit Name</th>
 								<th>Status</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr th:each="unit : ${activeUnitList}">
-								<td th:text="${unit.unitId}"></td>
+							<tr th:each="unit,stat : ${activeUnitList}">
+								<td class="d-none" th:text="${unit.unitId}"></td>
+								<td th:text="${stat.index + 1}"></td>
 								<td th:text="${unit.unitName}"></td>
 								<td th:text="${unit.status}"></td>
 								<td>
@@ -251,15 +255,17 @@
 					<table class="table table-bordered table-striped">
 						<thead>
 							<tr>
-								<th>ID</th>
+								<th class="d-none">ID</th>
+								<th>SI.No</th>
 								<th>Unit Name</th>
 								<th>Status</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr th:each="unit : ${inactiveUnitList}">
-								<td th:text="${unit.unitId}"></td>
+							<tr th:each="unit,stat : ${inactiveUnitList}">
+								<td class="d-none" th:text="${unit.unitId}"></td>
+								<td th:text="${stat.index + 1}"></td>
 								<td th:text="${unit.unitName}"></td>
 								<td th:text="${unit.status}"></td>
 								<td>
@@ -277,18 +283,61 @@
 		</div>
 	</div>
 	<!-- JavaScript for toggling the visibility of the unit lists -->
-		<script>
-			document.getElementById("toggleUnitListBtn").addEventListener("click", function() {
-				var unitLists = document.getElementById("unitLists");
-				if (unitLists.classList.contains("d-none")) {
-					unitLists.classList.remove("d-none");
-					this.textContent = "Hide List of Units"; // Change button text
-				} else {
-					unitLists.classList.add("d-none");
-					this.textContent = "Show List of Units"; // Change button text
-				}
-			});
-		</script>
+	<script>
+		document.getElementById("toggleUnitListBtn").addEventListener("click", function () {
+			var unitLists = document.getElementById("unitLists");
+			if (unitLists.classList.contains("d-none")) {
+				unitLists.classList.remove("d-none");
+				this.textContent = "Hide List of Units"; // Change button text
+			} else {
+				unitLists.classList.add("d-none");
+				this.textContent = "Show List of Units"; // Change button text
+			}
+		});
+	</script>
+
+	<script>
+		// Validate the image file type and size
+		document.getElementById("imageFile").addEventListener("change", function () {
+				    var file = this.files[0]; // Get the selected file
+				    if (file) {
+				        var fileType = file.name.split('.').pop().toLowerCase(); // Get the file extension
+				        var fileSize = file.size / 1024 / 1024; // Convert size to MB (1 MB = 1024 * 1024 bytes)
+
+				        // Check if the file type is JPG or JPEG
+				        if (fileType !== "jpg" && fileType !== "jpeg") {
+				            alert("Only JPG and JPEG images (.jpg, .jpeg) are allowed!");
+				            this.value = ""; // Clear the file input
+				        }
+				        // Check if the file size is under 10MB
+				        else if (fileSize > 10) {
+				            alert("The image size must be less than 10 MB!");
+				            this.value = ""; // Clear the file input
+				        }
+				    }
+				});
+		// Handle form submission and show alert
+		document.getElementById("addUnitForm").addEventListener("submit", function (event) {
+			// Prevent the form from submitting immediately (for demonstration purposes)
+			event.preventDefault();
+
+			// Validate the form before submission
+			var form = event.target;
+			var unitName = document.getElementById("unitName").value;
+			var imageFile = document.getElementById("imageFile").value;
+
+			if (unitName && imageFile) {
+				// If form is valid, simulate submission (use actual form submission in a real app)
+				alert("Successfully Submitted");
+				form.submit(); // Proceed with actual form submission
+			} else {
+				// If form is invalid
+				alert("Please fill out all required fields.");
+			}
+		});
+	</script>
+
+
 </body>
 
 </html>

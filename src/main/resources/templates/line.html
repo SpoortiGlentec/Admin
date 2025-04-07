@@ -133,6 +133,13 @@
 		    position: relative;
 		    z-index: 10; /* Ensure it stays above other content */
 		}
+		.table td {
+				    word-wrap: break-word;
+				    white-space: normal;
+				    max-width: 200px; /* Adjust the width as needed */
+				    overflow-wrap: break-word;
+				}
+		 
 
 		/* Add some space to the button */
 		#toggleAddEquipmentFormBtn {
@@ -174,9 +181,10 @@
 					</div>
 					<div class="mb-3">
 						<label for="imageFile" class="form-label">Upload Image</label>
-						<input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" required>
+						<input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/jpg"
+													required>
 					</div>
-					<button type="submit" class="btn btn-primary">Add Line</button>
+					<button type="submit" class="btn btn-primary" >Add Line</button>
 				</form>
 				<div class="mb-3 mt-3">
 	               <button id="toggleUnitListBtn" class="btn btn-primary">Show List of Lines</button>
@@ -194,7 +202,8 @@
 					<table class="table table-bordered table-striped">
 						<thead>
 							<tr>
-								<th>ID</th>
+								<th class="d-none">ID</th>
+																<th>SI.No</th>
 								<th>Line Name</th>
 								<th>Status</th>
 								<th>Unit Name</th>
@@ -202,8 +211,9 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr th:each="line : ${activeLineList}">
-								<td th:text="${line.lineId}"></td>
+							<tr th:each="line,stat : ${activeLineList}">
+								<td class="d-none" th:text="${line.lineId}"></td>
+								<td th:text="${stat.index + 1}"></td>
 								<td th:text="${line.lineName}"></td>
 								<td th:text="${line.status}"></td>
 								<td th:text="${line.unit.unitName}"></td>
@@ -232,7 +242,8 @@
 					<table class="table table-bordered table-striped">
 						<thead>
 							<tr>
-								<th>ID</th>
+								<th class="d-none">ID</th>
+								<th>SI NO</th>
 								<th>Line Name</th>
 								<th>Status</th>
 								<th>Unit Name</th>
@@ -240,8 +251,9 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr th:each="line : ${inactiveLineList}">
-								<td th:text="${line.lineId}"></td>
+							<tr th:each="line,stat : ${inactiveLineList}">
+								<td class="d-none" th:text="${line.lineId}"></td>
+								<td th:text="${stat.index + 1}"></td>
 								<td th:text="${line.lineName}"></td>
 								<td th:text="${line.status}"></td>
 								<td th:text="${line.unit.unitName}"></td>
@@ -271,6 +283,45 @@
 					}
 				});
 			</script>
+			
+			<script>
+			    // Validate the image file type and size
+				document.getElementById("imageFile").addEventListener("change", function () {
+						    var file = this.files[0]; // Get the selected file
+						    if (file) {
+						        var fileType = file.name.split('.').pop().toLowerCase(); // Get the file extension
+						        var fileSize = file.size / 1024 / 1024; // Convert size to MB (1 MB = 1024 * 1024 bytes)
+
+						        // Check if the file type is JPG or JPEG
+						        if (fileType !== "jpg" && fileType !== "jpeg") {
+						            alert("Only JPG and JPEG images (.jpg, .jpeg) are allowed!");
+						            this.value = ""; // Clear the file input
+						        }
+						        // Check if the file size is under 10MB
+						        else if (fileSize > 10) {
+						            alert("The image size must be less than 10 MB!");
+						            this.value = ""; // Clear the file input
+						        }
+						    }
+						});
+
+			    // Form submission validation
+			    document.querySelector('form').addEventListener('submit', function (event) {
+			        const lineName = document.getElementById('lineName').value;
+			        const imageFile = document.getElementById('imageFile').files[0];
+
+			        // Check if all fields are filled in
+			        if (!lineName || !imageFile) {
+			            alert('Please fill in all the fields before submitting!');
+			            event.preventDefault(); // Prevent form submission
+			        } else {
+			            alert('Successfully Submitted.');
+			        }
+			    });
+			</script>
+
+
+
 
 </body>
 

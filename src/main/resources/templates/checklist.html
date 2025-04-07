@@ -1,298 +1,456 @@
 <!DOCTYPE html>
 <html lang="en">
+ 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Line Management - Sugar Factory</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-	
-		       body {
-		           background-image: url('/images/Sugar1.jpeg');
-		           background-size: cover;
-		           background-position: center;
-		           background-repeat: no-repeat;
-		           font-family: 'Arial', sans-serif;
-		           color: #333;
-		       }
-
-		       .container {
-		           max-width: 1200px;
-		           padding: 20px;
-		           background-color: transparent;
-		           border-radius: 12px;
-		           box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
-		           margin-top: 30px;
-		       }
-
-		       h1,
-		       h2 {
-		           color: #5e3d26;
-		           text-align: center;
-		           margin-bottom: 25px;
-		       }
-
-		       h1 {
-		           font-size: 2.5rem;
-		           font-weight: bold;
-		       }
-
-		       .card {
-		           margin-bottom: 30px;
-		           border-radius: 10px;
-		           background-color: #f9f9f9;
-		           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-		           border: 1px solid #ddd;
-		       }
-
-		       .card-header {
-		           background-color: #d49e66;
-		           color: white;
-		           font-size: 1.5rem;
-		           padding: 10px;
-		           border-radius: 10px 10px 0 0;
-		       }
-
-		       .card-body {
-		           padding: 25px;
-		       }
-
-		       .form-control,
-		       .form-select {
-		           border-radius: 8px;
-		           padding: 12px;
-		           border: 1px solid #b38a58;
-		           margin-bottom: 20px;
-		       }
-
-		       .form-control:focus,
-		       .form-select:focus {
-		           border-color: #7a552f;
-		           box-shadow: 0 0 5px rgba(122, 85, 47, 0.4);
-		       }
-
-		       .btn-primary {
-		           background-color: #7a552f;
-		           border-color: #7a552f;
-		           padding: 12px 25px;
-		           font-weight: bold;
-		           transition: background-color 0.3s ease;
-		       }
-
-		       .btn-primary:hover {
-		           background-color: #5a3f26;
-		           border-color: #5a3f26;
-		       }
-
-		       .table th {
-		           background-color: #b48b4f;
-		           color: white;
-		           font-weight: bold;
-		           text-align: center;
-		       }
-
-		       .table td {
-		           text-align: center;
-		           padding: 10px;
-		       }
-
-		       .table-striped tbody tr:nth-of-type(odd) {
-		           background-color: #f7f1e0;
-		       }
-
-		       .table-striped tbody tr:nth-of-type(even) {
-		           background-color: #fff1d7;
-		       }
-
-		       .table-bordered {
-		           border-radius: 10px;
-		           border: 1px solid #ddd;
-		       }
-
-		       .table-bordered th,
-		       .table-bordered td {
-		           padding: 12px;
-		       }
-
-		       .mb-5 {
-		           margin-bottom: 3rem;
-		       }
-
-		       .alert {
-		           margin-top: 20px;
-		       }
-
-		       #addEquipmentForm {
-		           position: relative;
-		           z-index: 10;
-		       }
-
-		       #toggleAddEquipmentFormBtn {
-		           margin-bottom: 10px;
-		       }
-		   </style>
-    
-</head>
-<body>
-    <div class="container">
-        <!-- Main Page Button -->
-        <div>
-            <button onclick="window.location.href='/unit';" class="btn btn-primary mb-3">Main Page</button>
-        </div>
-
-        <!-- Add/Edit Checklist Form -->
-        <div class="card" id="addChecklistForm">
-            <div class="card-header">
-                Add/Edit Checklist Parameter
-            </div>
-            <div class="card-body">
-                <form id="checklistForm" action="/add-checklist" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" id="checklistId" name="checklistId" value=""> <!-- Hidden field for checklist ID -->
-
-                    <div class="mb-3">
-                        <label for="partId">Part:</label>
-                        <select id="partId" name="partId" class="form-select" required>
-                            <option value="" disabled selected>Choose Part</option>
-                            <option th:each="part : ${activePartList}" th:value="${part.partId}" th:text="${part.partName}"></option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="parameterName">Parameter Name:</label>
-                        <input type="text" id="parameterName" name="parameterName" class="form-control" value="" placeholder="Enter Parameter Name">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="inspectionCondition" class="form-label">Condition:</label>
-                        <select id="inspectionCondition" name="inspectionCondition" class="form-select" required
-                            onchange="toggleCriteriaFields()">
-                            <option value="" disabled selected>Choose inspectionCondition</option>
-                            <option value="with_criteria">With Criteria</option>
-                            <option value="without_criteria">Without Criteria</option>
-                        </select>
-                    </div>
-
-                    <div id="criteriaFields" style="display:none;">
-                        <div class="mb-3">
-                            <label for="parameterValueType" class="form-label">Parameter Value Type:</label>
-                            <select id="parameterValueType" name="parameterValueType" class="form-control">
-                                <option value="String">String</option>
-                                <option value="Float">Float</option>
-                                <option value="Integer">Integer</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="standardValue" class="form-label">Standard Value:</label>
-                            <input type="text" id="standardValue" name="standardValue" class="form-control" value="" placeholder="Enter Standard Value">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="unit" class="form-label">Unit:</label>
-                            <input type="text" id="unit" name="unit" class="form-control" value="" placeholder="Enter Unit">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Submit Checklist</button>
-                </form>
-			
-            </div>
-        </div>
-
-        <!-- Checklist List Table -->
-        <div class="card">
-            <div class="card-header">
-                Checklist List
-            </div>
-            <div class="card-body">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th class="d-none">Checklist ID</th>
-                            <th>SI.No</th>
-                            <th>Part Name</th>
-                            <th>Parameter Name</th>
-                            <th>Parameter Value Type</th>
-                            <th>Standard Value</th>
-                            <th>Unit</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="checklist, stat : ${checklistList}">
-                            <td class="d-none" th:text="${checklist.checklistId}"></td>
-                            <td th:text="${stat.index + 1}"></td>
-                            <td th:text="${checklist.part.partName}"></td>
-                            <td th:text="${checklist.parameterName}"></td>
-                            <td th:text="${checklist.parameterValueType}"></td>
-                            <td th:text="${checklist.standardValue}"></td>
-                            <td th:text="${checklist.unit}"></td>
-                            <td>
-								<!-- Edit Button -->
-								<button class="btn btn-warning btn-sm" 
-								        th:attr="onclick='editChecklist(' + ${checklist.checklistId} + ',' + ${checklist.part.partId} + ',\'' + ${checklist.parameterName} + '\',\'' + ${checklist.inspectionCondition} + '\',\'' + ${checklist.parameterValueType} + '\',\'' + ${checklist.standardValue} + '\',\'' + ${checklist.unit} + '\')'">
-								    Edit
-								</button>
-
-
-                                <!-- Delete Button -->
-                                <form action="/delete-checklist" method="POST" style="display:inline;">
-                                    <input type="hidden" name="checklistId" th:value="${checklist.checklistId}" />
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Are you sure you want to delete this checklist?');">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <script>
-		function toggleCriteriaFields() {
-		    const inspectionCondition = document.getElementById('inspectionCondition').value;
-		    const criteriaFields = document.getElementById('criteriaFields');
-		    
-		    if (inspectionCondition === 'with_criteria') {
-		        criteriaFields.style.display = 'block';  // Show fields for "With Criteria"
-		        
-		        // Optionally, ensure that these fields are populated correctly when switching back to "with_criteria"
-		        // No need to reset to 'NA' in this case
-		    } else {
-		        criteriaFields.style.display = 'none';  // Hide fields for "Without Criteria"
-
-		        // Reset fields to 'NA' when inspectionCondition is 'without_criteria'
-		        document.getElementById('parameterValueType').value = 'NA';
-		        document.getElementById('standardValue').value = 'NA';
-		        document.getElementById('unit').value = 'NA';
-		    }
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Line Management - Sugar Factory</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		body {
+			background-image: url('/images/Sugar1.jpeg');
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			font-family: 'Arial', sans-serif;
+			color: #333;
 		}
+ 
+		.container {
+			max-width: 1200px;
+			padding: 20px;
+			background-color: transparent;
+			border-radius: 12px;
+			box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+			margin-top: 30px;
+		}
+ 
+		h1,
+		h2 {
+			color: #5e3d26;
+			text-align: center;
+			margin-bottom: 25px;
+		}
+ 
+		h1 {
+			font-size: 2.5rem;
+			font-weight: bold;
+		}
+ 
+		.card {
+			margin-bottom: 30px;
+			border-radius: 10px;
+			background-color: #f9f9f9;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+			border: 1px solid #ddd;
+		}
+ 
+		.card-header {
+			background-color: #d49e66;
+			color: white;
+			font-size: 1.5rem;
+			padding: 10px;
+			border-radius: 10px 10px 0 0;
+		}
+ 
+		.card-body {
+			padding: 25px;
+		}
+ 
+		.form-control,
+		.form-select {
+			border-radius: 8px;
+			padding: 12px;
+			border: 1px solid #b38a58;
+			margin-bottom: 20px;
+		}
+ 
+		.form-control:focus,
+		.form-select:focus {
+			border-color: #7a552f;
+			box-shadow: 0 0 5px rgba(122, 85, 47, 0.4);
+		}
+ 
+		.btn-primary {
+			background-color: #7a552f;
+			border-color: #7a552f;
+			padding: 12px 25px;
+			font-weight: bold;
+			transition: background-color 0.3s ease;
+		}
+ 
+		.btn-primary:hover {
+			background-color: #5a3f26;
+			border-color: #5a3f26;
+		}
+ 
+		.table th {
+			background-color: #b48b4f;
+			color: white;
+			font-weight: bold;
+			text-align: center;
+		}
+ 
+		.table td {
+			text-align: center;
+			padding: 10px;
+		}
+ 
+		.table-striped tbody tr:nth-of-type(odd) {
+			background-color: #f7f1e0;
+		}
+ 
+		.table-striped tbody tr:nth-of-type(even) {
+			background-color: #fff1d7;
+		}
+ 
+		.table-bordered {
+			border-radius: 10px;
+			border: 1px solid #ddd;
+		}
+ 
+		.table-bordered th,
+		.table-bordered td {
+			padding: 12px;
+		}
+ 
+		.table td {
+			word-wrap: break-word;
+			white-space: normal;
+			max-width: 200px;
+			/* Adjust the width as needed */
+			overflow-wrap: break-word;
+		}
+ 
+		.mb-5 {
+			margin-bottom: 3rem;
+		}
+ 
+		.alert {
+			margin-top: 20px;
+		}
+ 
+		#addEquipmentForm {
+			position: relative;
+			z-index: 10;
+		}
+ 
+		#toggleAddEquipmentFormBtn {
+			margin-bottom: 10px;
+		}
+	</style>
+ 
+</head>
+ 
+<body>
+	<div class="container">
+		<!-- Main Page Button -->
+		<div>
+			<button onclick="window.location.href='/unit';" class="btn btn-primary mb-3">Main Page</button>
+		</div>
+ 
+		<!-- Add/Edit Checklist Form -->
+		<div class="card" id="addChecklistForm">
+ 
+			<div class="card-header">
+				Add/Edit Checklist Parameter
+			</div>
+			<div class="card-body">
+				<form id="checklistForm" action="/add-checklist" method="POST" enctype="multipart/form-data">
+					<input type="hidden" id="checklistId" name="checklistId" value="">
+					<!-- Hidden field for checklist ID -->
+ 
+					<div class="mb-3">
+						<label for="partId">Part:</label>
+						<select id="partId" name="partId" class="form-select" required>
+							<option value="" disabled selected>Choose Part</option>
+							<option th:each="part : ${activePartList}" th:value="${part.partId}"
+								th:text="${part.partName}"></option>
+						</select>
+					</div>
+ 
+					<div class="mb-3">
+						<label for="parameterName">Parameter Name:</label>
+						<input type="text" id="parameterName" name="parameterName" class="form-control" value=""
+							placeholder="Enter Parameter Name">
+					</div>
+ 
+					<div class="mb-3">
+						<label for="inspectionCondition" class="form-label">Condition:</label>
+						<select id="inspectionCondition" name="inspectionCondition" class="form-select" required
+							onchange="toggleCriteriaFields()">
+							<option value="" disabled selected>Choose inspectionCondition</option>
+							<option value="with_criteria">With Criteria</option>
+							<option value="without_criteria">Without Criteria</option>
+						</select>
+					</div>
+ 
+					<div id="criteriaFields" style="display:none;">
+						<div class="mb-3">
+							<label for="parameterValueType" class="form-label">Parameter Value Type:</label>
+							<select id="parameterValueType" name="parameterValueType" class="form-control">
+								<option value="String">String</option>
+								<option value="Float">Float</option>
+								<option value="Integer">Integer</option>
+							</select>
+						</div>
+ 
+						<div class="mb-3">
+							<label for="standardValue" class="form-label">Standard Value:</label>
+							<input type="text" id="standardValue" name="standardValue" class="form-control" value=""
+								placeholder="Enter Standard Value">
+						</div>
+ 
+						<div class="mb-3">
+							<label for="unit" class="form-label">Unit:</label>
+							<input type="text" id="unit" name="unit" class="form-control" value=""
+								placeholder="Enter Unit">
+						</div>
+						<div class="mb-3" style="display: flex; align-items: center;">
+						<label for="Tolorence" class="form-label" style="margin-right: 5px;">Tolerance:</label>
+						<input type="text" id="Tolorence" name="Tolorence" class="form-control"
+ 
+														placeholder="Enter Value" style="width: 80px; text-align: right;">
+						<span style="margin-left: 5px;">%</span>
+						</div>
+ 
+						<div class="mb-3">
+						<label for="max_Tolorence" class="form-label">Max Tolerance:</label>
+						<input type="text" id="max_Tolorence" name="max_Tolorence" class="form-control"
+ 
+														placeholder="Enter Max Tolorence">
+						</div>
+						<div class="mb-3">
+						<label for="min_Tolorence" class="form-label">Min Tolerance:</label>
+						<input type="text" id="min_Tolorence" name="min_Tolorence" class="form-control"
+ 
+														placeholder="Enter Min Tolerance">
+						</div>
+						
+					</div>
+ 
+					<button type="submit" class="btn btn-primary">Submit Checklist</button>
+				</form>
+ 
+			</div>
+		</div>
+ 
+		<!-- Checklist List Table -->
+		<div class="card">
+			<div class="card-header">
+				Checklist List
+			</div>
+			<div class="card-body">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th class="d-none">Checklist ID</th>
+							<th>SI.No</th>
+							<th>Part Name</th>
+							<th>Parameter Name</th>
+							<th>Parameter Value Type</th>
+							<th>Standard Value</th>
+							<th>Unit</th>
+							<th>Max_tol</th>
+							<th>Min_tol</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="checklist, stat : ${checklistList}">
+							<td class="d-none" th:text="${checklist.checklistId}"></td>
+							<td th:text="${stat.index + 1}"></td>
+							<td th:text="${checklist.part.partName}"></td>
+							<td th:text="${checklist.parameterName}"></td>
+							<td th:text="${checklist.parameterValueType}"></td>
+							<td th:text="${checklist.standardValue}"></td>
+							<td th:text="${checklist.unit}"></td>
+							<td th:text="${checklist.max_Tolorence}"></td>
+							<td th:text="${checklist.min_Tolorence}"></td>
+							<td>
+								<!-- Edit Button -->
+								<button class="btn btn-warning btn-sm"
+								th:attr="onclick='editChecklist(' + ${checklist.checklistId} + ',' + ${checklist.part.partId} + ',\'' + ${checklist.parameterName} + '\',\'' + ${checklist.inspectionCondition} + '\',\'' + ${checklist.parameterValueType} + '\',\'' + ${checklist.standardValue} + '\',\'' + ${checklist.unit} + '\',\'' + ${checklist.max_Tolorence} + '\',\'' + ${checklist.min_Tolorence} + '\')'">
+ 
+									Edit
+								</button>
+ 
+ 
+								<!-- Delete Button -->
+								<form action="/delete-checklist" method="POST" style="display:inline;">
+									<input type="hidden" name="checklistId" th:value="${checklist.checklistId}" />
+									<button type="submit" class="btn btn-danger btn-sm"
+										onclick="return confirm('Are you sure you want to delete this checklist?');">Delete</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+ 
+	<script>
+			function toggleCriteriaFields() {
+				const inspectionCondition = document.getElementById('inspectionCondition').value;
+				const criteriaFields = document.getElementById('criteriaFields');
+				if (inspectionCondition === 'with_criteria') {
+					criteriaFields.style.display = 'block';  // Show fields for "With Criteria"
+					// Optionally, ensure that these fields are populated correctly when switching back to "with_criteria"
+					// No need to reset to 'NA' in this case
+				} else {
+					criteriaFields.style.display = 'none';  // Hide fields for "Without Criteria"
+					// Reset fields to 'NA' when inspectionCondition is 'without_criteria'
+					document.getElementById('parameterValueType').value = 'NA';
+					document.getElementById('standardValue').value = 0;
+					document.getElementById('unit').value = 'NA';
+					document.getElementById('max_Tolorence').value = 0;
+					document.getElementById('min_Tolorence').value = 0;
+				}
+			}
+ 
+			function editChecklist(checklistId, partId, parameterName, inspectionCondition, parameterValueType, standardValue, unit,max_Tolorence,min_Tolorence) {
+				// Populate the form with existing values for editing
+				document.getElementById('checklistId').value = checklistId;
+				document.getElementById('partId').value = partId;
+				document.getElementById('parameterName').value = parameterName;
+				document.getElementById('parameterName').placeholder = parameterName;
+				document.getElementById('inspectionCondition').value = inspectionCondition;
+				document.getElementById('parameterValueType').value = parameterValueType;
+				document.getElementById('standardValue').value = standardValue;
+				document.getElementById('standardValue').placeholder = standardValue;
+				document.getElementById('unit').value = unit;
+				document.getElementById('unit').placeholder = unit;
+				document.getElementById('max_Tolorence').value = max_Tolorence;
+				document.getElementById('max_Tolorence').placeholder = max_Tolorence;
+				document.getElementById('min_Tolorence').value = min_Tolorence;
+				document.getElementById('min_Tolorence').placeholder = min_Tolorence;
+				// Show criteria fields if the inspectionCondition is 'with_criteria'
+				if (inspectionCondition === 'with_criteria') {
+					document.getElementById('criteriaFields').style.display = 'block';
+				} else {
+					document.getElementById('criteriaFields').style.display = 'none';
+				}
+				// Change the form action to edit checklist
+				document.getElementById('checklistForm').action = '/edit-checklist';  // Set action for editing
+			}
+	</script>
+	<script>
+			document.getElementById('Tolorence').addEventListener('input', function () {
+				this.value = this.value.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal
+			});
+	</script>
+	<script>
+			function calculateTolerance() {
+				let stdValue = parseFloat(document.getElementById('standardValue').value);
+				let tolerance = parseFloat(document.getElementById('Tolorence').value);
+				if (!isNaN(stdValue) && !isNaN(tolerance)) {
+					let maxTol = stdValue + (stdValue * tolerance / 100);
+					let minTol = stdValue - (stdValue * tolerance / 100);
+					document.getElementById('max_Tolorence').value = maxTol.toFixed(2);
+					document.getElementById('min_Tolorence').value = minTol.toFixed(2);
+				}
+			}
+			document.getElementById('standardValue').addEventListener('input', calculateTolerance);
+			document.getElementById('Tolorence').addEventListener('input', calculateTolerance);
+	</script>
+	
+	
+	
+	<script>
+		
+		document.getElementById("checklistForm").addEventListener("submit", function (event) {
+		    event.preventDefault(); // Prevent form from submitting immediately
+ 
+		    // Get form fields
+		    const parameterName = document.getElementById('parameterName').value.trim();
+		    const inspectionCondition = document.getElementById('inspectionCondition').value;
+		    const partId = document.getElementById('partId').value;
+		    const parameterValueType = document.getElementById('parameterValueType').value;
+		    const standardValue = document.getElementById('standardValue').value.trim();
+		    const unit = document.getElementById('unit').value.trim();
+		    const minTolerance = document.getElementById('min_Tolorence').value.trim();
+		    const maxTolerance = document.getElementById('max_Tolorence').value.trim();
+ 
+		    // Validation Checks
+		    if (parameterName === '') {
+		        alert('Please enter a Parameter Name.');
+		        return;
+		    }
+ 
+		    if (partId === '') {
+		        alert('Please select a Part.');
+		        return;
+		    }
+ 
+		    if (inspectionCondition === '') {
+		        alert('Please select the Inspection Condition.');
+		        return;
+		    }
+ 
+		    // If "with_criteria" is selected, validate the additional fields
+		    if (inspectionCondition === 'with_criteria') {
+		        if (parameterValueType === '') {
+		            alert('Please select a Parameter Value Type.');
+		            return;
+		        }
+ 
+				if (standardValue === '') {
+				    alert('Please enter a Standard Value.');
+				    return;
+				} else if (isNaN(standardValue)) {
+				    alert('The Standard Value must be a number.');
+				    return;
+				}
 
-
-        function editChecklist(checklistId, partId, parameterName, inspectionCondition, parameterValueType, standardValue, unit) {
-            // Populate the form with existing values for editing
-            document.getElementById('checklistId').value = checklistId;
-            document.getElementById('partId').value = partId;
-            document.getElementById('parameterName').value = parameterName;
-            document.getElementById('parameterName').placeholder = parameterName;
-            document.getElementById('inspectionCondition').value = inspectionCondition;
-            document.getElementById('parameterValueType').value = parameterValueType;
-            document.getElementById('standardValue').value = standardValue;
-            document.getElementById('standardValue').placeholder = standardValue;
-            document.getElementById('unit').value = unit;
-            document.getElementById('unit').placeholder = unit;
-
-            // Show criteria fields if the inspectionCondition is 'with_criteria'
-            if (inspectionCondition === 'with_criteria') {
-                document.getElementById('criteriaFields').style.display = 'block';
-            } else {
-                document.getElementById('criteriaFields').style.display = 'none';
-            }
-
-            // Change the form action to edit checklist
-            document.getElementById('checklistForm').action = '/edit-checklist';  // Set action for editing
-        }
-    </script>
+ 
+		        if (unit === '') {
+		            alert('Please enter a Unit.');
+		            return;
+		        }
+ 
+		        if (minTolerance === '') {
+		            alert('Please enter Min Tolerance.');
+		            return;
+		        }
+ 
+		        if (maxTolerance === '') {
+		            alert('Please enter Max Tolerance.');
+		            return;
+		        }
+ 
+		        // Ensure Standard Value, Min Tolerance, and Max Tolerance are valid numbers
+		        if (isNaN(standardValue)) {
+		            alert('Standard Value must be a valid number.');
+		            return;
+		        }
+ 
+		        if (isNaN(minTolerance)) {
+		            alert('Min Tolerance must be a valid number.');
+		            return;
+		        }
+ 
+		        if (isNaN(maxTolerance)) {
+		            alert('Max Tolerance must be a valid number.');
+		            return;
+		        }
+ 
+		        // Ensure Min Tolerance is not greater than Max Tolerance
+		        if (parseFloat(minTolerance) > parseFloat(maxTolerance)) {
+		            alert('Min Tolerance cannot be greater than Max Tolerance.');
+		            return;
+		        }
+		    }
+ 
+		    // If everything is valid, submit the form
+		    alert('Form submitted successfully!');
+		    this.submit();
+		});
+ 
+	</script>
+ 
 </body>
+ 
 </html>
+ 
+ 

@@ -1,6 +1,8 @@
 package com.exmp;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +20,11 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/unit")
 public class UnitController {
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
 
-    private static final String IMAGE_FOLDER_PATH = "src/main/resources/static/images/";
+	@Value("${image.folder.path}")
+    private String IMAGE_FOLDER_PATH;
 
     @Autowired
     private UnitService unitService;
@@ -115,7 +120,7 @@ public class UnitController {
 
         if (folder.exists() && folder.isDirectory()) {
             File[] files = folder.listFiles((dir, name) -> 
-                name.endsWith(".jpg") || name.endsWith(".jpeg") // Filter for .jpg and .jpeg files only
+                name.endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg") // Filter for .jpg and .jpeg files only
             );
             if (files != null) {
                 for (File file : files) {
@@ -207,4 +212,69 @@ public class UnitController {
         unitService.activateUnit(unitId);
         return "redirect:/unit";
     }
+//    @PostMapping("/images")
+//    @ResponseBody
+//    public String uploadMultipleImages(@RequestParam("image") MultipartFile[] imageFiles) {
+//
+//        StringBuilder responseMessage = new StringBuilder();
+//
+//        // Debugging: Log the number of files received
+//        responseMessage.append("Number of files received: ").append(imageFiles.length).append("\n");
+//
+//        // Check if files were received
+//        if (imageFiles.length == 0) {
+//            return "No images were uploaded.";
+//        }
+//
+//        // Process each file
+//        for (MultipartFile imageFile : imageFiles) {
+//            String originalFileName = imageFile.getOriginalFilename();
+//            responseMessage.append("Uploading file: ").append(originalFileName).append("\n");
+//
+//            // Process the file
+//            try {
+//                // Save the image file with its original name (no unique name generation)
+//                String filePath = IMAGE_FOLDER_PATH + originalFileName;
+//                File uploadDir = new File(IMAGE_FOLDER_PATH);
+//                
+//                // Ensure the upload directory exists
+//                if (!uploadDir.exists()) {
+//                    uploadDir.mkdirs();
+//                }
+//
+//                Path path = Paths.get(filePath);
+//                Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+//
+//                responseMessage.append("File uploaded successfully: ").append(originalFileName).append("\n");
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                responseMessage.append("Error uploading file: ").append(originalFileName).append("\n");
+//            }
+//        }
+//
+//        return responseMessage.toString();
+//    }
+    @PostMapping("/images")
+    @ResponseBody
+    public String uploadImage(@RequestParam("image") MultipartFile[] imageFiles) {
+        String fileName = null;
+        for (MultipartFile imageFile : imageFiles) {
+            fileName = imageFile.getOriginalFilename();
+            try {
+                File uploadDir = new File(IMAGE_FOLDER_PATH);
+                if (!uploadDir.exists()) uploadDir.mkdirs();
+
+                Path path = Paths.get(IMAGE_FOLDER_PATH + fileName);
+                Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                // 📢 Send real-time WebSocket notification
+                messagingTemplate.convertAndSend("/topic/image", fileName);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "Uploaded and WebSocket message sent";
+    }
+
 }

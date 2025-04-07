@@ -41,6 +41,8 @@ public class RoleController {
             @RequestParam("approver3") String approver3,
             @RequestParam("approver4") String approver4,
             @RequestParam("approver5") String approver5,
+            @RequestParam("manager") String manager,
+            @RequestParam("inspector2") String inspector2,
             Model model) {
 
         RoleAssignment roleAssignment = new RoleAssignment();
@@ -51,6 +53,8 @@ public class RoleController {
         roleAssignment.setApprover3(approver3);
         roleAssignment.setApprover4(approver4);
         roleAssignment.setApprover5(approver5);
+        roleAssignment.setManager(manager);
+        roleAssignment.setInspector2(inspector2);
 
         roleAssignmentRepository.save(roleAssignment); // Save to DB
 
@@ -62,6 +66,8 @@ public class RoleController {
         model.addAttribute("approver3", roleAssignment.getApprover3());
         model.addAttribute("approver4", roleAssignment.getApprover4());
         model.addAttribute("approver5", roleAssignment.getApprover5());
+        model.addAttribute("manager", roleAssignment.getManager());
+        model.addAttribute("inspector2", roleAssignment.getInspector2());
         
         model.addAttribute("message", "Role assigned successfully!");
 

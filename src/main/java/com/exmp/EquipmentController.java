@@ -1,6 +1,7 @@
 package com.exmp;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,8 @@ import java.util.List;
 
 @Controller
 public class EquipmentController {
-	private static final String IMAGE_FOLDER_PATH = "src/main/resources/static/images/";
+	@Value("${image.folder.path}")
+    private String IMAGE_FOLDER_PATH;
 
     @Autowired
     private EquipmentService equipmentService;
@@ -53,6 +55,10 @@ public class EquipmentController {
         Line line = lineService.getLineById(lineId);
         try {
             String fileName = null;
+            String fileExtension = imageFile.getOriginalFilename().toLowerCase();
+            if (!fileExtension.endsWith(".jpg") && !fileExtension.endsWith(".jpeg")) {
+                return "redirect:/unit?error=InvalidFileType";  // Redirect with an error message
+            }
 
             // Save the uploaded file
             if (!imageFile.isEmpty()) {
