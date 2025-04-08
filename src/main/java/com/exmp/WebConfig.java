@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
             .addResourceHandler("/images/**")
-            .addResourceLocations("file:///D:/Images/"); // change path as per your IMAGE_FOLDER_PATH
+            .addResourceLocations("file:///D:/upload/"); // change path as per your IMAGE_FOLDER_PATH
     }
 }
 
